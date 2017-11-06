@@ -14,22 +14,14 @@ import random
 driver = webdriver.Chrome('/usr/bin/chromedriver')
 driver.get('https://gabrielecirulli.github.io/2048/')
 
-# wait for popup and close it
-# time.sleep(2)
-# noticeButton = driver.find_element_by_css_selector('body > div > div.app-notice > span')
-# noticeButton = WebDriverWait(driver, 50).until(
-#     EC.visibility_of_element_located((By.CSS_SELECTOR, '.notice-close-button'))
-# )
-# noticeButton.click()
-
-# try:
-#     noticeButton = driver.find_element_by_css_selector('body > div > div.app-notice > span')
-# except NoSuchElementException:
-#     noticeButton = driver.find_element_by_css_selector('body > div > div.app-notice > span')
-    # noticeButton = WebDriverWait(driver, 3).until(
-    #     EC.visibility_of_element_located((By.CSS_SELECTOR, '.notice-close-button'))
-    # )
-    # noticeButton.click()
+# Wait for popup and close it
+try:
+    noticeButton = WebDriverWait(driver, 10).until(
+        EC.element_to_be_clickable((By.CSS_SELECTOR, '.notice-close-button'))
+    )
+finally:
+    time.sleep(.5) # Needs a brief moment before clicking, otherwise it will misclick
+    noticeButton.click()
 
 body = driver.find_element_by_css_selector('body')
 
@@ -44,7 +36,7 @@ while not gameOver:
         gameOver = driver.find_element_by_css_selector('body > div > div.game-container > div.game-message.game-over')
     except NoSuchElementException:
         body.send_keys(random.choice(keys))
-        # time.sleep(.2)
+        time.sleep(.005)
 
 if gameOver:
     # sleep so the score-addition class isn't captured
@@ -54,4 +46,4 @@ if gameOver:
     topScore = driver.find_element_by_css_selector('body > div > div.heading > div > div.best-container').text
 
     print('Game over!')
-    print('The score this round is {}, and the top score is {}'.format(roundScore, topScore))
+    print('The score this round is {}, and the top score is {}.'.format(roundScore, topScore))
