@@ -7,22 +7,41 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.wait import WebDriverWait
+from selenium.common.exceptions import NoSuchElementException
 import time
 import random
 
 driver = webdriver.Chrome('/usr/bin/chromedriver')
 driver.get('https://gabrielecirulli.github.io/2048/')
-time.sleep(3)
-noticeButton = WebDriverWait(driver, 10).until(
-    EC.visibility_of_element_located((By.CSS_SELECTOR, ".notice-close-button"))
-)
-# print(noticeButton.text)
 
-# For now the easiest way to close the popup is to wait for it to open
-# time.sleep(5)
-# noticeButton = driver.find_element_by_css_selector('.notice-close-button')
+# wait for popup and close it
+time.sleep(2)
+noticeButton = WebDriverWait(driver, 50).until(
+    EC.visibility_of_element_located((By.CSS_SELECTOR, '.notice-close-button'))
+)
 noticeButton.click()
 
+body = driver.find_element_by_css_selector('body')
 
+# random number for random arrow key press
+randomNumber = random.randint(0, 3)
+keys = [Keys.UP, Keys.RIGHT, Keys.DOWN, Keys.LEFT]
 
-# print(random.randint(0, 3)) # random number for random arrow key press
+gameOver = False
+
+while not gameOver:
+    try:
+        gameOver = driver.find_element_by_css_selector('body > div > div.game-container > div.game-message.game-over')
+    except NoSuchElementException:
+        body.send_keys(random.choice(keys))
+        # time.sleep(.2)
+
+if gameOver:
+    # sleep so the score-addition class isn't captured
+    time.sleep(1)
+
+    roundScore = driver.find_element_by_css_selector('body > div > div.heading > div > div.score-container').text
+    topScore = driver.find_element_by_css_selector('body > div > div.heading > div > div.best-container').text
+
+    print('Game over!')
+    print('The score this round is {}, and the top score is {}'.format(roundScore, topScore))
