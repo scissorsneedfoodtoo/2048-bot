@@ -15,11 +15,21 @@ driver = webdriver.Chrome('/usr/bin/chromedriver')
 driver.get('https://gabrielecirulli.github.io/2048/')
 
 # wait for popup and close it
-time.sleep(2)
-noticeButton = WebDriverWait(driver, 50).until(
-    EC.visibility_of_element_located((By.CSS_SELECTOR, '.notice-close-button'))
-)
-noticeButton.click()
+# time.sleep(2)
+# noticeButton = driver.find_element_by_css_selector('body > div > div.app-notice > span')
+# noticeButton = WebDriverWait(driver, 50).until(
+#     EC.visibility_of_element_located((By.CSS_SELECTOR, '.notice-close-button'))
+# )
+# noticeButton.click()
+
+# try:
+#     noticeButton = driver.find_element_by_css_selector('body > div > div.app-notice > span')
+# except NoSuchElementException:
+#     noticeButton = driver.find_element_by_css_selector('body > div > div.app-notice > span')
+    # noticeButton = WebDriverWait(driver, 3).until(
+    #     EC.visibility_of_element_located((By.CSS_SELECTOR, '.notice-close-button'))
+    # )
+    # noticeButton.click()
 
 body = driver.find_element_by_css_selector('body')
 
