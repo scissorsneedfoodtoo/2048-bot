@@ -23,27 +23,43 @@ finally:
     time.sleep(.5) # Needs a brief moment before clicking, otherwise it will misclick
     noticeButton.click()
 
-body = driver.find_element_by_css_selector('body')
+def playGame(gameRound):
+    gameOver = False
+    body = driver.find_element_by_css_selector('body')
 
-# random number for random arrow key press
-randomNumber = random.randint(0, 3)
-keys = [Keys.UP, Keys.RIGHT, Keys.DOWN, Keys.LEFT]
+    # random number for random arrow key press
+    randomNumber = random.randint(0, 3)
+    keys = [Keys.UP, Keys.RIGHT, Keys.DOWN, Keys.LEFT]
 
-gameOver = False
+    while not gameOver and gameRound <= 3:
+        try:
+            gameOver = driver.find_element_by_css_selector('.game-message.game-over')
+            return finishGame(gameRound)
+        except NoSuchElementException:
+            body.send_keys(random.choice(keys))
+            time.sleep(.005)
 
-while not gameOver:
-    try:
-        gameOver = driver.find_element_by_css_selector('body > div > div.game-container > div.game-message.game-over')
-    except NoSuchElementException:
-        body.send_keys(random.choice(keys))
-        time.sleep(.005)
+def finishGame(gameRound):
 
-if gameOver:
     # sleep so the score-addition class isn't captured
     time.sleep(1)
 
-    roundScore = driver.find_element_by_css_selector('body > div > div.heading > div > div.score-container').text
-    topScore = driver.find_element_by_css_selector('body > div > div.heading > div > div.best-container').text
+    roundScore = driver.find_element_by_css_selector('.score-container').text
+    topScore = driver.find_element_by_css_selector('.best-container').text
 
-    print('Game over!')
+    print('Round {} is over!'.format(gameRound))
     print('The score this round is {}, and the top score is {}.'.format(roundScore, topScore))
+
+    gameRound += 1
+
+    if gameRound <= 3:
+        restartButton = driver.find_element_by_css_selector('.retry-button')
+
+        restartButton.click()
+        return playGame(gameRound)
+    else:
+        print('Game over!')
+
+gameRound = 1
+
+playGame(gameRound)
